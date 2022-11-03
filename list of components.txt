@@ -1,0 +1,13 @@
+1. arduino uno
+
+2. dual H bridge driver ( l298n )
+
+3. ultrasonic sensor
+
+4. infrared reciver and transmiter ( any infrared remote controller )
+
+5. digital compass qmc5883 ( fake hmc 5883 )
+
+6. mini servo motor
+
+7. arduino motor + wheel and some kind of chasis
