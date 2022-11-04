@@ -1,4 +1,4 @@
-# arduino-autonomius-robot
+# arduino-autonomous-robot
 
 robot is still in development.
 
