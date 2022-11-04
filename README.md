@@ -1,4 +1,4 @@
-# arduino-autonomius-robot
+## arduino-autonomius-robot
 
 robot is still in development.
 
@@ -20,4 +20,4 @@ currently only manual and hybrid modes are working, full autonomius mode will be
 
 
 
-build and code author is kakhi kotchauri
+**build and code author is kakhi kotchauri**
