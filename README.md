@@ -1,4 +1,4 @@
-## arduino-autonomius-robot
+# arduino-autonomius-robot
 
 robot is still in development.
 
@@ -6,7 +6,7 @@ here is a robot sketch 1.0 stable beta.
 
 currently only manual and hybrid modes are working, full autonomius mode will be added in the future,
 
-# currently robot can :
+### currently robot can :
 
 1) dont collide with objects.
 
@@ -19,5 +19,6 @@ currently only manual and hybrid modes are working, full autonomius mode will be
 5) correct its heading when moving if extrenal force changing its course 
 
 
+/////
 
 **build and code author is kakhi kotchauri**
