@@ -4,7 +4,7 @@ robot is still in development.
 
 here is a robot sketch 1.0 stable beta.
 
-currently only manual and hybrid modes are working, full autonomius mode will be added in the future,
+currently only manual and hybrid modes are working, full autonomius and follow me mode will be added in the future,
 
 ### currently robot can :
 
