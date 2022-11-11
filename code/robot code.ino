@@ -11,7 +11,7 @@ Servo headservo;
 int servo_position = 0;
 
 // for ir recive  
-int RECV_PIN = 12;     
+const int RECV_PIN = 12;     
 IRrecv irrecv(RECV_PIN);     
 decode_results results; 
 
@@ -37,11 +37,11 @@ int averagedistance = 40;
 
 // for movements
 
-int leftforward = 2;
-int leftbackward = 4;
+const int leftforward = 2;
+const int leftbackward = 4;
 
-int rightforward = 7;
-int rightbackward = 8;
+const int rightforward = 7;
+const int rightbackward = 8;
 
 bool stopforward = false;
 bool blockreverse = true;
@@ -51,7 +51,19 @@ bool blockreverse = true;
 
 int setmode = 0;
 int ledinterval;
-int ledpin = 9;
+const int ledpin = 9;
+
+// for turn functions
+bool turnrightactive = false;
+bool turnedonright = false;
+bool turnedonleft = false;
+bool isturning = false;
+
+bool turnleftactive = false;
+
+
+int deg;
+
 
 // for usehybridmode
 
@@ -195,11 +207,12 @@ bool isreseted = false;
 
 void reset() {
 
- if(headingtimer.isExpired() && !headingsetted)
+ if(headingtimer.isExpired() && !headingsetted && !turnrightactive && !turnleftactive)
  {
     correctheading = azimuth;
     headingsetted = true;
-    Serial.println("headinglastset");
+    Serial.println(00000000000);
+    Serial.println(azimuth);
  }
 
  if(isreseted == false) {
@@ -214,7 +227,9 @@ void reset() {
     backward(false); 
     right(false); 
     left(false); 
-    correctheading = azimuth;
+    if(!turnrightactive && turnleftactive) {
+      correctheading = azimuth;
+    }
     headingtimer.start(170, AsyncDelay::MILLIS);
     Serial.println("reset");
     headservo.write(90);
@@ -234,6 +249,81 @@ void reset() {
 
 }
 
+bool testt = false;
+bool testt2 = false;
+
+// functions for turning 
+
+void turnright() { 
+
+ if(azimuth < correctheading + deg && turnrightactive && !testt) {
+
+   if(azimuth < 5 && correctheading + deg - 359 >= 0 ) {
+     correctheading = correctheading + deg - 359;
+    //  Serial.println("metia 359 ze");
+     Serial.println(correctheading);
+     testt = true;
+   }
+
+   right(true);
+   isturning = true;
+   Serial.println("turningonrightside");
+ } else if(azimuth < correctheading && testt) {
+   Serial.println(correctheading);
+   Serial.println(azimuth);
+       right(true);
+   isturning = true;
+  //  Serial.println("turningonrightside2");
+ }
+ else if(!turnedonright) {
+   right(false);
+  //  correctheading = azimuth;
+   isturning = false;
+  //  Serial.println("finished turning on right side");
+   turnedonright = true;
+   testt = false;
+   turnrightactive = false;
+  headingtimer.start(170, AsyncDelay::MILLIS);
+ }
+
+}
+
+
+
+void turnleft() { 
+
+ if(azimuth > correctheading - deg && turnleftactive && !testt2) {
+
+   if(azimuth > 355 && correctheading - deg + 359 >= 0 ) {
+     correctheading = correctheading - deg + 359;
+    //  Serial.println("naklebia 359 ze");
+     Serial.println(correctheading);
+     testt2 = true;
+   }
+
+   left(true);
+   isturning = true;
+  //  Serial.println("turningonrightside");
+ } else if(azimuth > correctheading && testt2) {
+   Serial.println(correctheading);
+   Serial.println(azimuth);
+       left(true);
+   isturning = true;
+  //  Serial.println("turningonrightside2");
+ }
+ else if(!turnedonleft) {
+   left(false);
+  //  correctheading = azimuth;
+   isturning = false;
+  //  Serial.println("finished turning on left side");
+   turnedonleft = true;
+   testt2 = false;
+   turnleftactive = false;
+  headingtimer.start(170, AsyncDelay::MILLIS);
+ }
+
+}
+
 
 void reciveir() {
 
@@ -247,12 +337,14 @@ if (irrecv.decode(&results)){
         oldir = results.value;
     }
 
+    Serial.println(oldir);
+
     if(oldir == -12241) {
       forward(true); 
-      Serial.println("forward");
+      // Serial.println("forward");
     } else if(oldir == 28815) {
       backward(true);
-      Serial.println("backward");
+      // Serial.println("backward");
     } else if(oldir == -30601 && blockreverse) {
 
        if(setmode == 0 && !blocktimercheck) {
@@ -270,10 +362,10 @@ if (irrecv.decode(&results)){
           right(true);
           movingonright = true;
           correctheading = azimuth;
-          Serial.println("right");
+          // Serial.println("right");
        } else if(setmode == 1) {
           right(true);
-          Serial.println("right");
+          // Serial.println("right");
        }
 
     } else if(oldir == 2295 && blockreverse) {
@@ -294,10 +386,10 @@ if (irrecv.decode(&results)){
           left(true);
           movingonleft = true;
           correctheading = azimuth;
-          Serial.println("left");
+          // Serial.println("left");
        } else if(setmode == 1) {
           left(true);
-          Serial.println("left");
+          // Serial.println("left");
        }
 
     } else if(oldir == 6375) {
@@ -308,6 +400,14 @@ if (irrecv.decode(&results)){
       stopforward = false;
     } else if(oldir == -17851) {
       digitalWrite(ledpin, LOW);
+    } else if(oldir == 30855) {
+      deg = 90;
+      turnrightactive = true;
+      turnedonright = false;
+    } else if(oldir == 14535) {
+      deg = 90;
+      turnleftactive = true;
+      turnedonleft = false;
     }
 
 
@@ -340,6 +440,8 @@ void blinkled(int timedelay) {
 }
 
 
+
+
 // function for hybrid mode
 
 void usehybridmode() {
@@ -349,7 +451,7 @@ void usehybridmode() {
     // Serial.println(movingonright);
     // Serial.println(movingonleft);
 
-  if(!movingonright && !movingonleft) {
+  if(!movingonright && !movingonleft && !isturning) {
 
     // Serial.println("shemodis kompasshi");
 
@@ -406,11 +508,11 @@ void usehybridmode() {
 
 
     if(averagedistance  <= 20 && !stopforward && headservo.read() == 90) {
-      Serial.println("gacherdi");
+      // Serial.println("gacherdi");
       forward(false);
       stopforward = true;
     } else if(stopforward && averagedistance > 20) {
-      Serial.println("gaushvi");
+      // Serial.println("gaushvi");
       stopforward = false;
     }
 
@@ -428,7 +530,7 @@ void usehybridmode() {
 }
 
 
-////////////////////////////////////////////////
+//////////////////////////////////////////////// /
 
 
 void setup()     
@@ -464,8 +566,9 @@ void loop(){
     usesonic();
     useaveragenum(30, distance);
     usehybridmode();
+    turnright();
+    turnleft();
   }
-
 
   reciveir();
 
