@@ -708,7 +708,7 @@ void setup()
   ledtimer.start(ledinterval, AsyncDelay::MILLIS);
   compasstimer.start(200, AsyncDelay::MILLIS);
   compass.init();
-  compass.setCalibration(-1823, 1000, -823, 1987, -1672, 1270);
+  compass.setCalibration(-1156, 303, 0, 2006, -1128, 0);
   pinMode(leftforward, OUTPUT);
   pinMode(leftbackward, OUTPUT);
   pinMode(rightforward, OUTPUT);
